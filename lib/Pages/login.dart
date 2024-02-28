@@ -1,7 +1,14 @@
+import 'dart:convert';
+
+import 'package:fix_cp/Pages/basepages.dart';
 import 'package:fix_cp/Pages/register.dart';
 import 'package:fix_cp/Widgets/Color.dart';
+import 'package:fix_cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:motion_toast/motion_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
@@ -17,8 +24,41 @@ class _LoginUserState extends State<LoginUser> {
   bool _isNotValidate = false;
   bool _obscureText = true;
 
-  void registeruser() async {
+  late SharedPreferences prefs;
+
+  void loginuser() async {
     if (emailController.text.isNotEmpty && passwordController.text.isNotEmpty) {
+      var reqBody = {
+        "email": emailController.text,
+        "password": passwordController.text,
+      };
+
+      var response = await http.post(Uri.parse(login),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(reqBody));
+      var jsonresponse = jsonDecode(response.body);
+      if (jsonresponse['status']) {
+        var myToken = jsonresponse['token'];
+        prefs.setString('token', myToken);
+        MotionToast(
+          primaryColor: Colors.green.shade300,
+          description: Text(
+            "เข้าสู่ระบบสำเร็จ",
+            style: TextStyle(fontSize: 20, color: Colors.green.shade500),
+          ),
+          height: 80,
+          width: double.maxFinite,
+          icon: Icons.check_circle_outline_rounded,
+          iconSize: 30,
+        ).show(context);
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => basePages(
+                    token: myToken,
+                  )),
+        );
+      } else {}
     } else {
       setState(() {
         _isNotValidate = true;
@@ -27,6 +67,16 @@ class _LoginUserState extends State<LoginUser> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initSharedPre();
+  }
+
+  void initSharedPre() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Whitecolor,
@@ -58,7 +108,7 @@ class _LoginUserState extends State<LoginUser> {
                         height: 150,
                       ),
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 15),
+                        padding: EdgeInsets.only(bottom: 20),
                         child: Text(
                           "แจ้งซ่อมออนไลน์ \nคณะวิทยาลัยการคอมพิวเตอร์",
                           style: TextStyle(
@@ -82,11 +132,18 @@ class _LoginUserState extends State<LoginUser> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 15),
+                        padding: const EdgeInsets.only(bottom: 20),
                         child: TextField(
                           keyboardType: TextInputType.emailAddress,
                           controller: emailController,
                           decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 2,
+                                  color: Bluelogocolor,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
                             filled: true,
                             fillColor: Whitecolor,
                             errorStyle: TextStyle(color: Colors.red.shade400),
@@ -108,6 +165,13 @@ class _LoginUserState extends State<LoginUser> {
                           obscureText: _obscureText,
                           controller: passwordController,
                           decoration: InputDecoration(
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 2,
+                                  color: Bluelogocolor,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15))),
                             filled: true,
                             fillColor: Whitecolor,
                             errorStyle: TextStyle(color: Colors.red.shade400),
@@ -137,7 +201,7 @@ class _LoginUserState extends State<LoginUser> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          registeruser();
+                          loginuser();
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Bluelogocolor,
@@ -161,7 +225,8 @@ class _LoginUserState extends State<LoginUser> {
                         children: [
                           const Text(
                             "ถ้าหากคุณยังไม่มีบัญชี",
-                            style: TextStyle(color: Bluelogocolor),
+                            style:
+                                TextStyle(color: Bluelogocolor, fontSize: 17),
                           ),
                           TextButton(
                               onPressed: () {
@@ -177,7 +242,8 @@ class _LoginUserState extends State<LoginUser> {
                                 style: TextStyle(
                                     color: Bluelogocolor,
                                     decoration: TextDecoration.underline,
-                                    decorationColor: Bluelogocolor),
+                                    decorationColor: Bluelogocolor,
+                                    fontSize: 17),
                               ))
                         ],
                       )
