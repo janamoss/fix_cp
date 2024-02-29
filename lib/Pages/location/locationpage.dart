@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fix_cp/Pages/location/addlocation.dart';
+import 'package:fix_cp/Pages/register.dart';
 import 'package:fix_cp/Widgets/Color.dart';
 import 'package:fix_cp/Widgets/appbar.dart';
 import 'package:fix_cp/Widgets/deletedialog.dart';
@@ -22,18 +23,56 @@ class _loactionPageState extends State<loactionPage> {
   List<bool> _showDropdown = [];
   late String email;
   late String usertype;
-
+  late List? itemdevices;
   late List? items;
+
+  String? _selectedDevice;
+
+  Map<String, IconData> icons = {
+    "หมวดหมู่เครื่องใช้ไฟฟ้า": Icons.monitor_rounded,
+    "หมวดหมู่คอมพิวเตอร์": Icons.memory_rounded,
+    "หมวดหมู่ประปา": Icons.water_damage_rounded,
+    "หมวดหมู่ไฟฟ้า": Icons.electric_bolt_rounded,
+    "หมวดหมู่อื่นๆ": Icons.devices_other_rounded,
+  };
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     items = [];
+    itemdevices = [];
     getAllLoactions();
+    getAllDevices();
     Map<String, dynamic> jwtDecodedToken = JwtDecoder.decode(widget.token);
     email = jwtDecodedToken['email'];
     usertype = jwtDecodedToken['usertype'];
+  }
+
+  void addlistDevices(locationid) async {
+    var reqBody = {
+      "locationId": locationid,
+      "device": _selectedDevice,
+    };
+
+    var response = await http.post(Uri.parse(addlistdevices),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(reqBody));
+    var jsonresponse = jsonDecode(response.body);
+    if (jsonresponse["status"]) {
+      Navigator.pop(context);
+    } else {}
+    items = [];
+    getAllLoactions();
+  }
+
+  void getAllDevices() async {
+    var response = await http.get(Uri.parse(getdevices),
+        headers: {"Content-Type": "application/json"});
+    var jsonresponse = jsonDecode(response.body);
+    setState(() {
+      itemdevices = jsonresponse['success'];
+    });
   }
 
   void getAllLoactions() async {
@@ -50,11 +89,9 @@ class _loactionPageState extends State<loactionPage> {
     var reqBody = {
       "id": id,
     };
-
     var response = await http.post(Uri.parse(deletelocation),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(reqBody));
-
     var jsonresponse = jsonDecode(response.body);
     items = [];
     getAllLoactions();
@@ -163,10 +200,24 @@ class _loactionPageState extends State<loactionPage> {
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 30, color: Whitecolor),
                     ),
-                    subtitle: Text(
-                      'ชั้น : ${items![index]["floor"]} อาคาร : ${items![index]["building"]}',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20, color: DarkBluelogocolor),
+                    subtitle: Column(
+                      children: [
+                        Text(
+                          'ชั้น : ${items![index]["floor"]} อาคาร : ${items![index]["building"]}',
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(fontSize: 20, color: DarkBluelogocolor),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'จำนวนอุปกรณ์ : ${items![index]["listDevices"].length}',
+                          textAlign: TextAlign.center,
+                          style:
+                              TextStyle(fontSize: 20, color: DarkBluelogocolor),
+                        ),
+                      ],
                     ),
                     trailing: RotatedBox(
                       quarterTurns: 1,
@@ -197,13 +248,8 @@ class _loactionPageState extends State<loactionPage> {
                                   height: 50,
                                   child: ElevatedButton.icon(
                                     onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   CupertinoPageRoute(
-                                      //       builder: (context) => addDevicePage(
-                                      //             token: widget.token,
-                                      //           )),
-                                      // );
+                                      dialogadddevice(
+                                          context, '${items![index]["_id"]}');
                                     },
                                     label: Padding(
                                       padding: const EdgeInsets.all(5.0),
@@ -233,15 +279,7 @@ class _loactionPageState extends State<loactionPage> {
                                   width: double.maxFinite,
                                   height: 50,
                                   child: ElevatedButton.icon(
-                                    onPressed: () {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   CupertinoPageRoute(
-                                      //       builder: (context) => addDevicePage(
-                                      //             token: widget.token,
-                                      //           )),
-                                      // );
-                                    },
+                                    onPressed: () {},
                                     label: Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Text(
@@ -315,5 +353,113 @@ class _loactionPageState extends State<loactionPage> {
             )),
       ),
     );
+  }
+
+  Future<void> dialogadddevice(BuildContext context, String input) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            elevation: 0,
+            icon: Icon(
+              Icons.add_box_rounded,
+              color: Bluelogocolor2,
+              size: 30,
+            ),
+            backgroundColor: Whitecolor,
+            title: Text(
+              'เพิ่มอุปกรณ์',
+            ),
+            content: Container(
+              width: MediaQuery.sizeOf(context).width * 0.8,
+              height: MediaQuery.sizeOf(context).width * 0.25,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Column(
+                    children: [
+                      Textmain(name: "อุปกรณ์"),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: StatefulBuilder(
+                            builder: (context, setState) => DropdownButton(
+                              items: itemdevices!
+                                  .map<DropdownMenuItem<String>>((item) {
+                                return DropdownMenuItem<String>(
+                                  value: item['name'],
+                                  child: Row(
+                                    children: [
+                                      icons[item['iconname']] != null
+                                          ? Icon(
+                                              icons[item['iconname']]!,
+                                              color: Bluelogocolor,
+                                            )
+                                          : SizedBox(),
+                                      SizedBox(width: 15),
+                                      Text(
+                                        item['name'],
+                                        style: TextStyle(color: Bluelogocolor),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedDevice = value;
+                                });
+                              },
+                              hint: Text(
+                                "กรุณาเลือกอุปกรณ์",
+                                style: TextStyle(
+                                    color: Bluelogocolor, fontSize: 17),
+                              ),
+                              value: _selectedDevice,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  addlistDevices(input);
+                  setState(() {
+                    _selectedDevice = null;
+                  });
+                },
+                label: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Text(
+                    "เพิ่มอุปกรณ์",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Whitecolor, fontSize: 20),
+                  ),
+                ),
+                style: ButtonStyle(
+                    shape: MaterialStatePropertyAll(ContinuousRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(15)))),
+                    backgroundColor:
+                        MaterialStatePropertyAll(Colors.green.shade400)),
+                icon: Icon(Icons.add, color: Whitecolor, size: 20),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('ยกเลิก',
+                    style: TextStyle(
+                        color: Colors.orangeAccent.shade400, fontSize: 20)),
+              ),
+            ],
+          );
+        });
   }
 }

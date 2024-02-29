@@ -69,28 +69,28 @@ class _BottomNavBarAdminState extends State<BottomNavBarAdmin> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: DarkBluelogocolor,
-      backgroundColor: Bluelogocolor,
+      selectedItemColor: Bluelogocolor2,
+      backgroundColor: DarkBluelogocolor,
       unselectedItemColor: Whitecolor,
       elevation: 0,
       items: [
         BottomNavigationBarItem(
-          activeIcon: Icon(Icons.home_rounded, color: DarkBluelogocolor),
+          activeIcon: Icon(Icons.home_rounded, color: Bluelogocolor2),
           icon: Icon(Icons.home_rounded, color: Whitecolor),
           label: 'การแจ้งซ่อมทั้งหมด',
         ),
         BottomNavigationBarItem(
-          activeIcon: Icon(Icons.room_rounded, color: DarkBluelogocolor),
+          activeIcon: Icon(Icons.room_rounded, color: Bluelogocolor2),
           icon: Icon(Icons.room_rounded, color: Whitecolor),
           label: 'ห้อง',
         ),
         BottomNavigationBarItem(
-          activeIcon: Icon(Icons.devices, color: DarkBluelogocolor),
+          activeIcon: Icon(Icons.devices, color: Bluelogocolor2),
           icon: Icon(Icons.devices, color: Whitecolor),
           label: 'อุปกรณ์',
         ),
         BottomNavigationBarItem(
-          activeIcon: Icon(Icons.person, color: DarkBluelogocolor),
+          activeIcon: Icon(Icons.person, color: Bluelogocolor2),
           icon: Icon(Icons.person, color: Whitecolor),
           label: 'โปรไฟล์',
         ),

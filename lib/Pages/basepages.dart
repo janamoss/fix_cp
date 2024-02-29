@@ -2,6 +2,8 @@ import 'package:fix_cp/Pages/devices/devicepage.dart';
 import 'package:fix_cp/Pages/location/locationpage.dart';
 import 'package:fix_cp/Pages/login.dart';
 import 'package:fix_cp/Pages/profile.dart';
+import 'package:fix_cp/Pages/reportrepair/allreportreair.dart';
+import 'package:fix_cp/Pages/reportrepair/historyreportuser.dart';
 import 'package:fix_cp/Pages/staffhome.dart';
 import 'package:fix_cp/Pages/userhome.dart';
 import 'package:fix_cp/Widgets/bottomNav.dart';
@@ -43,9 +45,9 @@ class _basePagesState extends State<basePages> {
           ? userHome(
               token: widget.token,
             )
-          : staffPage(token: widget.token),
+          : AllreportPages(token: widget.token),
       usertype == "Student" || usertype == "TA" || usertype == "Professor"
-          ? userHome(token: widget.token)
+          ? HistoryreportPages(token: widget.token)
           : loactionPage(
               token: widget.token,
             ),

@@ -464,8 +464,9 @@ class _RegisterUserState extends State<RegisterUser> {
 
 class Textmain extends StatelessWidget {
   final String name;
+  final double? fontsize;
   final colors;
-  const Textmain({super.key, required this.name, this.colors});
+  const Textmain({super.key, required this.name, this.colors, this.fontsize});
 
   @override
   Widget build(BuildContext context) {
@@ -476,7 +477,7 @@ class Textmain extends StatelessWidget {
             name,
             style: TextStyle(
                 color: colors ?? Bluelogocolor,
-                fontSize: 20,
+                fontSize: fontsize ?? 20,
                 fontWeight: FontWeight.bold),
           ),
         ),
