@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:http/http.dart' as http;
+import 'package:motion_toast/motion_toast.dart';
 
 class loactionPage extends StatefulWidget {
   final token;
@@ -93,6 +94,18 @@ class _loactionPageState extends State<loactionPage> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(reqBody));
     var jsonresponse = jsonDecode(response.body);
+    MotionToast(
+        primaryColor: Colors.green.shade400,
+        height: 80,
+        width: double.maxFinite,
+        description: Text(
+          "ลบห้องสำเร็จ",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, color: Colors.green.shade400),
+        ),
+        icon: Icons.delete,
+        iconSize: 30,
+      ).show(context);
     items = [];
     getAllLoactions();
   }

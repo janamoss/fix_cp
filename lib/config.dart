@@ -1,19 +1,23 @@
-final url = "http://192.168.89.243:3000/";
+const url = "http://10.199.121.149:3000/";
 
-final register = url + "register";
-final login = url + "login";
-final history = url + "checkHistory";
-final alluser = url + "getAllUser";
+const register = "${url}register";
+const login = "${url}login";
+const history = "${url}checkHistory";
+const alluser = "${url}getAllUser";
 
-final editstatusss = url + "editStatus";
-final reportrepairs = url + "addreportRepair";
-final getreportrepair = url + "getAllreportRepair";
+const editstatusss = "${url}editStatus";
+const reportrepairs = "${url}addreportRepair";
+const getreportrepair = "${url}getAllreportRepair";
+const deleteDevice = "${url}deleteDevice";
+const getdeviceone = "${url}getdeviceone";
+const updatedevices = "${url}updatedevice";
 
-final addlocation = url + "addLocation";
-final getlocation = url + "getAllLocation";
-final addlistdevices = url + "addListDevices";
-final deletelocation = url + "deleteLocation";
+const addlocation = "${url}addLocation";
+const getlocation = "${url}getAllLocation";
+const addlistdevices = "${url}addListDevices";
+const deletelocation = "${url}deleteLocation";
 
-final adddevice = url + "addDevice";
-final getdevices = url + "getAllDevice";
-final deletedevice = url + "deleteDevice";
+const adddevice = "${url}addDevice";
+const getdevices = "${url}getAllDevice";
+const deletedevice = "${url}deleteDevice";
+const addequipmentNo = "${url}addequipmentNo";

@@ -8,6 +8,8 @@ import 'package:fix_cp/Widgets/appbar.dart';
 import 'package:fix_cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:http/http.dart' as http;
 
@@ -67,6 +69,20 @@ class _AllreportPagesState extends State<AllreportPages> {
     });
   }
 
+  formatDateShort(timestamp) {
+    initializeDateFormatting("th");
+    DateTime date = DateTime.parse(timestamp);
+    DateFormat dateFormat = DateFormat('dd MMM yyyy', 'th');
+    return dateFormat.format(date);
+  }
+
+  formatTime(timestamp) {
+    initializeDateFormatting("th");
+    DateTime date = DateTime.parse(timestamp);
+    DateFormat timeFormat = DateFormat('HH:mm', 'th');
+    return timeFormat.format(date);
+  }
+
   void editstatus(reportid) async {
     var reqBody = {
       "reportId": reportid,
@@ -83,10 +99,8 @@ class _AllreportPagesState extends State<AllreportPages> {
       Navigator.push(
         context,
         CupertinoPageRoute(
-            builder: (context) => basePages(
-                  token: widget.token,
-                  selectedIndexs: 0
-                )),
+            builder: (context) =>
+                basePages(token: widget.token, selectedIndexs: 0)),
       );
     } else {}
     itemreport = [];
@@ -208,7 +222,8 @@ class _AllreportPagesState extends State<AllreportPages> {
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  _seletedstatus = '${itemreport![index]["status"]}';
+                                  _seletedstatus =
+                                      '${itemreport![index]["status"]}';
                                   dialogeditstatus(
                                       context, '${itemreport![index]["_id"]}');
                                 },
@@ -233,6 +248,13 @@ class _AllreportPagesState extends State<AllreportPages> {
                                     color: Whitecolor, size: 20),
                               ),
                               historys(
+                                input: formatDateShort(
+                                        '${itemreport![index]["date"]}') +
+                                    " " +
+                                    formatTime('${itemreport![index]["date"]}'),
+                                statusname: "วันที่",
+                              ),
+                              historys(
                                 input: "${itemreport![index]["status"]}",
                                 statusname: "สถานะ",
                               ),
@@ -244,20 +266,10 @@ class _AllreportPagesState extends State<AllreportPages> {
                                 input: "${itemreport![index]["symptom"]}",
                                 statusname: "อาการ",
                               ),
-                              itemreport![index]["imagesymptom"] != null
-                                  ? Textmain(name: "ภาพอาการ")
-                                  : SizedBox(),
-                              itemreport![index]["imagesymptom"] != null
-                                  ? ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(30)),
-                                      child: Image.memory(
-                                        base64Decode(
-                                            itemreport![index]["imagesymptom"]),
-                                        fit: BoxFit.cover,
-                                        width: 300,
-                                      ),
-                                    )
+                              itemreport![index]["imagesymptom"] != ""
+                                  ? images(
+                                      image64:
+                                          '${itemreport![index]["imagesymptom"]}')
                                   : SizedBox(),
                               SizedBox(
                                 height: 20,
@@ -398,6 +410,31 @@ class historys extends StatelessWidget {
                   child: Text(input)),
             ))
       ],
+    );
+  }
+}
+
+class images extends StatelessWidget {
+  final image64;
+  const images({super.key, this.image64});
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: true,
+      child: Column(
+        children: [
+          Textmain(name: "ภาพอาการ"),
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(30)),
+            child: Image.memory(
+              base64Decode(image64),
+              fit: BoxFit.cover,
+              width: 300,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

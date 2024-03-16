@@ -93,20 +93,17 @@ class _userHomeState extends State<userHome> {
     if (symptomController.text.isNotEmpty &&
         _selectedLocations!.isNotEmpty &&
         _selectedDevices!.isNotEmpty) {
-      _selectedImage != null
-          ? imageBytes = await _selectedImage!.readAsBytesSync()
-          : null;
+      if (_selectedImage != null) {
+        imageBytes = await _selectedImage!.readAsBytesSync();
+        final image = img.decodeImage(imageBytes!);
 
-      final image = img.decodeImage(imageBytes!);
-
-      // ลดขนาดรูปภาพ
-      final resizedImage =
-          img.copyResize(image as img.Image, width: 400, height: 400);
-      final resizedImageBytes = img.encodeJpg(resizedImage);
-      resizedImageBytes != null
-          ? base64String = base64Encode(resizedImageBytes)
-          : null;
-
+        final resizedImage =
+            img.copyResize(image as img.Image, width: 400, height: 400);
+        final resizedImageBytes = img.encodeJpg(resizedImage);
+        resizedImageBytes != null
+            ? base64String = base64Encode(resizedImageBytes)
+            : null;
+      }
       var reqBody = {
         "iduser": user_id,
         "device": _selectedDevices,

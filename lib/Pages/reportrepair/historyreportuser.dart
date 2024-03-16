@@ -7,6 +7,8 @@ import 'package:fix_cp/Widgets/appbar.dart';
 import 'package:fix_cp/config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,6 +25,9 @@ class _HistoryreportPagesState extends State<HistoryreportPages> {
   late String usertype;
   late String name;
   late String user_id;
+
+  String? dateString;
+  String? timeString;
 
   List? itemhistory;
   List<bool> _showDropdown = [];
@@ -50,13 +55,27 @@ class _HistoryreportPagesState extends State<HistoryreportPages> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Whitecolor,
+      backgroundColor: Color.fromARGB(0, 224, 242, 250),
       appBar: Appbarmain(name: "ประวัติแจ้งซ่อม", autoLeading: false),
       body: Container(
         margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
         child: buildList(),
       ),
     );
+  }
+
+  formatDateShort(timestamp) {
+    initializeDateFormatting("th");
+    DateTime date = DateTime.parse(timestamp);
+    DateFormat dateFormat = DateFormat('dd MMM yyyy', 'th');
+    return dateFormat.format(date);
+  }
+
+  formatTime(timestamp) {
+    initializeDateFormatting("th");
+    DateTime date = DateTime.parse(timestamp);
+    DateFormat timeFormat = DateFormat('HH:mm', 'th');
+    return timeFormat.format(date);
   }
 
   void getHistory(user_id) async {
@@ -154,6 +173,14 @@ class _HistoryreportPagesState extends State<HistoryreportPages> {
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              historys(
+                                input: formatDateShort(
+                                        '${itemhistory![index]["date"]}') +
+                                    " " +
+                                    formatTime(
+                                        '${itemhistory![index]["date"]}'),
+                                statusname: "วันที่",
+                              ),
                               historys(
                                 input: "${itemhistory![index]["status"]}",
                                 statusname: "สถานะ",

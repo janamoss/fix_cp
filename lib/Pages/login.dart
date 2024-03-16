@@ -58,7 +58,19 @@ class _LoginUserState extends State<LoginUser> {
                     token: myToken,
                   )),
         );
-      } else {}
+      } else {
+        MotionToast(
+          primaryColor: Colors.red.shade300,
+          description: Text(
+            "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+            style: TextStyle(fontSize: 20, color: Colors.red.shade500),
+          ),
+          height: 80,
+          width: double.maxFinite,
+          icon: Icons.check_circle_outline_rounded,
+          iconSize: 30,
+        ).show(context);
+      }
     } else {
       setState(() {
         _isNotValidate = true;
